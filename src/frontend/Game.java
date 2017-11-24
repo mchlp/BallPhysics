@@ -27,6 +27,7 @@ public class Game extends Application {
 		Pane root = new Pane();
 		Scene scene = new Scene(root);
 		primaryStage.setTitle("Ball Physics");
+		primaryStage.setMaximized(true);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
