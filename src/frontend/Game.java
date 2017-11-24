@@ -6,12 +6,19 @@
 
 package frontend;
 
+import backend.Sprite;
+import backend.Utilities;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Game extends Application {
@@ -24,12 +31,18 @@ public class Game extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+
 		Pane root = new Pane();
 		Scene scene = new Scene(root);
+
+		root.setBackground(new Background(new BackgroundFill(Utilities.BACKGROUND_GREY, CornerRadii.EMPTY, Insets.EMPTY)));
+
 		primaryStage.setTitle("Ball Physics");
 		primaryStage.setMaximized(true);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+
+        Sprite.setPane(root);
 
 		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -51,7 +64,6 @@ public class Game extends Application {
                 System.out.println(1 / deltaTime);
                 onUpdate(deltaTime);
                 prevTime = curTime;
-
 			}
 		};
 
