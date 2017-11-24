@@ -6,13 +6,17 @@
 
 package frontend;
 
+import backend.Coordinate;
 import backend.Sprite;
 import backend.Utilities;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -21,9 +25,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
+
 public class Game extends Application {
 
 	private long prevTime;
+    private Line curDrawingLine;
+
+    private Pane root;
+    private ArrayList<Sprite> allSpriteList;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -32,27 +42,41 @@ public class Game extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
-		Pane root = new Pane();
+	    allSpriteList = new ArrayList<>();
+
+        root = new Pane();
 		Scene scene = new Scene(root);
 
 		root.setBackground(new Background(new BackgroundFill(Utilities.BACKGROUND_GREY, CornerRadii.EMPTY, Insets.EMPTY)));
 
 		primaryStage.setTitle("Ball Physics");
-		primaryStage.setMaximized(true);
+		//primaryStage.setMaximized(true);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
         Sprite.setPane(root);
+        Sprite.setSpriteArrayList(allSpriteList);
 
-		scene.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        scene.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
             @Override
-            public void handle(MouseEvent click) {
-                if (click.isControlDown()) {
-                    // control is pressed
-                } else {
-                    // control is not pressed
+            public void handle(MouseEvent drag) {
+                if (curDrawingLine == null) {
+                    curDrawingLine = new Line(new Coordinate(drag.getX(), drag.getY()));
                 }
-                click.consume();
+                if (drag.isControlDown()) {
+                    curDrawingLine.setEnd(new Coordinate(drag.getX(), ((javafx.scene.shape.Line) (curDrawingLine.getmNode())).getStartY()));
+                } else {
+                    curDrawingLine.setEnd(new Coordinate(drag.getX(), drag.getY()));
+                }
+                drag.consume();
+            }
+        });
+
+        scene.addEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent release) {
+                curDrawingLine = null;
+                release.consume();
             }
         });
 
@@ -61,7 +85,7 @@ public class Game extends Application {
 			@Override
 			public void handle(long curTime) {
                 double deltaTime = (curTime - prevTime) / 1E9;
-                System.out.println(1 / deltaTime);
+                //System.out.println(1 / deltaTime);
                 onUpdate(deltaTime);
                 prevTime = curTime;
 			}
@@ -71,6 +95,8 @@ public class Game extends Application {
 	}
 
 	private void onUpdate(double deltaTime) {
-
+        for (Sprite sprite : allSpriteList) {
+            sprite.update(deltaTime);
+        }
 	}
 }
