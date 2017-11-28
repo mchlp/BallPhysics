@@ -1,8 +1,8 @@
 
 /*
  * Michael Pu
- * SpaceshipGame - Velocity
- * November 2017
+ * BallPhysics - Velocity
+ * November 27, 2017
  */
 
 

@@ -1,8 +1,8 @@
 
 /*
  * Michael Pu
- * SpaceshipGame - Coordinate
- * November 2017
+ * BallPhysics - Coordinate
+ * November 27, 2017
  */
 
 

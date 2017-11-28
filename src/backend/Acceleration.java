@@ -1,8 +1,8 @@
 
 /*
  * Michael Pu
- * SpaceshipGame - Acceleration
- * November 2017
+ * BallPhysics - Acceleration
+ * November 27, 2017
  */
 
 

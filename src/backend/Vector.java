@@ -1,8 +1,8 @@
 
 /*
  * Michael Pu
- * SpaceshipGame - Vector
- * November 2017
+ * BallPhysics - Vector
+ * November 27, 2017
  */
 
 

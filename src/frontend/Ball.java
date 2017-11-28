@@ -1,7 +1,7 @@
 /*
  * Michael Pu
  * BallPhysics - Ball
- * November 2017
+ * November 27, 2017
  */
 
 package frontend;
