@@ -6,18 +6,20 @@
 
 package backend;
 
+import frontend.Line;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public abstract class Sprite {
 
     private static Pane sPane;
     private static ArrayList<Sprite> sSpriteList;
+    protected static ArrayList<Line> sLineList;
 
-    protected Point2D mPosition;
+    protected Coordinate mPosition;
     protected Node mNode;
 
     protected Sprite(Node node) {
@@ -38,5 +40,9 @@ public abstract class Sprite {
 
     public static void setSpriteArrayList(ArrayList<Sprite> spriteList) {
         sSpriteList = spriteList;
+    }
+
+    public static void setLineList(ArrayList<Line> lineList) {
+        sLineList = lineList;
     }
 }

@@ -57,6 +57,11 @@ public class Velocity {
 		setDirection(direction);
 	}
 
+
+	public void setXY(double xSpeed, double ySpeed) {
+		mVector.setXY(xSpeed, ySpeed);
+	}
+
 	public void setSpeed(double speed) {
 		mVector.setMagnitude(speed);
 	}

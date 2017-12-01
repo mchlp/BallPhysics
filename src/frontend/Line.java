@@ -26,6 +26,7 @@ public class Line extends Sprite {
 
     public Line(Point2D start, Point2D end) {
         super(new javafx.scene.shape.Line());
+        sLineList.add(this);
         mLine = (javafx.scene.shape.Line) mNode;
         mLine.setStroke(LINE_COLOUR);
         mLine.setStrokeWidth(LINE_THICKNESS);
@@ -52,6 +53,6 @@ public class Line extends Sprite {
     }
 
     public javafx.scene.shape.Line getmNode() {
-        return (javafx.scene.shape.Line) (mNode);
+        return mLine;
     }
 }
