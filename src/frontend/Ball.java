@@ -6,14 +6,14 @@
 
 package frontend;
 
-import backend.Coordinate;
 import backend.Velocity;
+import javafx.geometry.Point2D;
 
 public class Ball {
-    private Coordinate mPosition;
+    private Point2D mPosition;
     private Velocity mVelocity;
 
     public Ball(double x, double y) {
-        mPosition = new Coordinate(x, y);
+        mPosition = new Point2D(x, y);
     }
 }

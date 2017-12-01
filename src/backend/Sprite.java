@@ -9,6 +9,7 @@ package backend;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public abstract class Sprite {
@@ -16,7 +17,7 @@ public abstract class Sprite {
     private static Pane sPane;
     private static ArrayList<Sprite> sSpriteList;
 
-    protected Coordinate mPosition;
+    protected Point2D mPosition;
     protected Node mNode;
 
     protected Sprite(Node node) {

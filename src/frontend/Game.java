@@ -6,19 +6,21 @@
 
 package frontend;
 
-import backend.Coordinate;
 import backend.Sprite;
 import backend.Utilities;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
@@ -31,6 +33,8 @@ public class Game extends Application {
     private Pane root;
     private ArrayList<Sprite> allSpriteList;
 
+    private static final double WINDOW_SIZE_TO_SCREEN_RATIO = 0.8;
+
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -38,15 +42,23 @@ public class Game extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 
+        Rectangle2D primaryScreenBounds = Screen.getPrimary().getVisualBounds();
+        double screenWidth = primaryScreenBounds.getWidth() * WINDOW_SIZE_TO_SCREEN_RATIO;
+        double screenHeight = primaryScreenBounds.getHeight() * WINDOW_SIZE_TO_SCREEN_RATIO;
+
 	    allSpriteList = new ArrayList<>();
 
         root = new Pane();
+        root.setPrefWidth(screenWidth);
+        root.setPrefHeight(screenHeight);
+
 		Scene scene = new Scene(root);
 
 		root.setBackground(new Background(new BackgroundFill(Utilities.BACKGROUND_GREY, CornerRadii.EMPTY, Insets.EMPTY)));
 
 		primaryStage.setTitle("Ball Physics");
 		//primaryStage.setMaximized(true);
+        primaryStage.setResizable(false);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
@@ -56,13 +68,42 @@ public class Game extends Application {
         scene.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent drag) {
+
+                Point2D dragPoint = new Point2D(drag.getX(), drag.getY());
+
                 if (curDrawingLine == null) {
-                    curDrawingLine = new Line(new Coordinate(drag.getX(), drag.getY()));
+                    curDrawingLine = new Line(dragPoint);
                 }
-                if (drag.isControlDown()) {
-                    curDrawingLine.setEnd(new Coordinate(drag.getX(), ((javafx.scene.shape.Line) (curDrawingLine.getmNode())).getStartY()));
+
+                double yDiff = drag.getY() - curDrawingLine.getmNode().getStartY();
+                double xDiff = drag.getX() - curDrawingLine.getmNode().getStartX();
+                double angle = Math.abs(Math.toDegrees(Math.atan2(Math.abs(yDiff), Math.abs(xDiff))));
+
+                if (yDiff < 0) {
+                    if (xDiff > 0) {
+                        angle += 0;
+                    } else {
+                        angle = 90+(90-angle);
+                    }
                 } else {
-                    curDrawingLine.setEnd(new Coordinate(drag.getX(), drag.getY()));
+                    if (xDiff < 0) {
+                        angle += 180;
+                    } else {
+                        angle = 270+(90-angle);
+                    }
+                }
+
+                System.out.println(angle);
+
+                if (drag.isControlDown()) {
+                    if (angle > 45 && angle <= 135 || angle > 225 && angle <= 315) {
+                        curDrawingLine.setEnd(new Point2D(curDrawingLine.getmNode().getStartX(), dragPoint.getY()));
+                    } else {
+                        curDrawingLine.setEnd(new Point2D(dragPoint.getX(), curDrawingLine.getmNode().getStartY()));
+                    }
+
+                } else {
+                    curDrawingLine.setEnd(new Point2D(drag.getX(), drag.getY()));
                 }
                 drag.consume();
             }

@@ -6,8 +6,8 @@
 
 package frontend;
 
-import backend.Coordinate;
 import backend.Sprite;
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.StrokeLineCap;
 
@@ -16,15 +16,15 @@ public class Line extends Sprite {
     private static final int LINE_THICKNESS = 10;
     private static final Color LINE_COLOUR = Color.RED;
 
-    private Coordinate mStart;
-    private Coordinate mEnd;
+    private Point2D mStart;
+    private Point2D mEnd;
     private javafx.scene.shape.Line mLine;
 
-    public Line(Coordinate start) {
+    public Line(Point2D start) {
         this(start, start);
     }
 
-    public Line(Coordinate start, Coordinate end) {
+    public Line(Point2D start, Point2D end) {
         super(new javafx.scene.shape.Line());
         mLine = (javafx.scene.shape.Line) mNode;
         mLine.setStroke(LINE_COLOUR);
@@ -35,7 +35,7 @@ public class Line extends Sprite {
         updateSprite();
     }
 
-    public void setEnd(Coordinate end) {
+    public void setEnd(Point2D end) {
         mEnd = end;
     }
 
@@ -49,5 +49,9 @@ public class Line extends Sprite {
     @Override
     public void update(double deltaTime) {
         updateSprite();
+    }
+
+    public javafx.scene.shape.Line getmNode() {
+        return (javafx.scene.shape.Line) (mNode);
     }
 }
