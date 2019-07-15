@@ -6,6 +6,7 @@
 
 package frontend;
 
+import backend.Collidable;
 import backend.Sprite;
 import backend.Utilities;
 import javafx.animation.AnimationTimer;
@@ -15,7 +16,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
@@ -24,16 +24,12 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-
 public class Game extends Application {
 
     private long prevTime;
     private Line curDrawingLine;
 
     private Pane root;
-    private ArrayList<Sprite> allSpriteList;
-    private ArrayList<Line> allLineList;
 
     private static final double WINDOW_SIZE_TO_SCREEN_RATIO = 0.8;
 
@@ -48,16 +44,14 @@ public class Game extends Application {
         double screenWidth = primaryScreenBounds.getWidth() * WINDOW_SIZE_TO_SCREEN_RATIO;
         double screenHeight = primaryScreenBounds.getHeight() * WINDOW_SIZE_TO_SCREEN_RATIO;
 
-        allSpriteList = new ArrayList<>();
-        allLineList = new ArrayList<>();
-
         root = new Pane();
         root.setPrefWidth(screenWidth);
         root.setPrefHeight(screenHeight);
 
         Scene scene = new Scene(root);
 
-        root.setBackground(new Background(new BackgroundFill(Utilities.BACKGROUND_GREY, CornerRadii.EMPTY, Insets.EMPTY)));
+        root.setBackground(new Background(new BackgroundFill(Utilities.BACKGROUND_GREY, CornerRadii.EMPTY,
+                Insets.EMPTY)));
 
         primaryStage.setTitle("Ball Physics");
         //primaryStage.setMaximized(true);
@@ -65,16 +59,15 @@ public class Game extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        Sprite.setPane(root);
-        Sprite.setSpriteArrayList(allSpriteList);
-        Sprite.setLineList(allLineList);
-
         scene.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent press) {
                 switch (press.getButton()) {
                     case SECONDARY:
-                        new Ball(press.getX(), press.getY());
+                        Ball ball = new Ball(press.getX(), press.getY());
+                        Sprite.spriteList.add(ball);
+                        Collidable.collidableList.add(ball);
+                        root.getChildren().add(ball.getNode());
                         break;
                 }
                 press.consume();
@@ -87,16 +80,18 @@ public class Game extends Application {
 
                 switch (drag.getButton()) {
                     case PRIMARY:
-
-
                         Point2D dragPoint = new Point2D(drag.getX(), drag.getY());
 
                         if (curDrawingLine == null) {
                             curDrawingLine = new Line(dragPoint);
+                            Line.lineList.add(curDrawingLine);
+                            Sprite.spriteList.add(curDrawingLine);
+                            Collidable.collidableList.add(curDrawingLine);
+                            root.getChildren().add(curDrawingLine.getNode());
                         }
 
-                        double yDiff = drag.getY() - curDrawingLine.getmNode().getStartY();
-                        double xDiff = drag.getX() - curDrawingLine.getmNode().getStartX();
+                        double yDiff = drag.getY() - curDrawingLine.getNode().getStartY();
+                        double xDiff = drag.getX() - curDrawingLine.getNode().getStartX();
                         double angle = Math.abs(Math.toDegrees(Math.atan2(Math.abs(yDiff), Math.abs(xDiff))));
 
                         if (yDiff < 0) {
@@ -117,9 +112,11 @@ public class Game extends Application {
 
                         if (drag.isControlDown()) {
                             if (angle > 45 && angle <= 135 || angle > 225 && angle <= 315) {
-                                curDrawingLine.setEnd(new Point2D(curDrawingLine.getmNode().getStartX(), dragPoint.getY()));
+                                curDrawingLine.setEnd(new Point2D(curDrawingLine.getNode().getStartX(),
+                                        dragPoint.getY()));
                             } else {
-                                curDrawingLine.setEnd(new Point2D(dragPoint.getX(), curDrawingLine.getmNode().getStartY()));
+                                curDrawingLine.setEnd(new Point2D(dragPoint.getX(),
+                                        curDrawingLine.getNode().getStartY()));
                             }
 
                         } else {
@@ -150,7 +147,7 @@ public class Game extends Application {
             @Override
             public void handle(long curTime) {
                 double deltaTime = (curTime - prevTime) / 1E9;
-                //System.out.println(1 / deltaTime);
+//                System.out.println(1 / deltaTime);
                 onUpdate(deltaTime);
                 prevTime = curTime;
             }
@@ -160,7 +157,7 @@ public class Game extends Application {
     }
 
     private void onUpdate(double deltaTime) {
-        for (Sprite sprite : allSpriteList) {
+        for (Sprite sprite : Sprite.spriteList) {
             sprite.update(deltaTime);
         }
     }

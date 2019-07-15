@@ -6,54 +6,90 @@
 
 package frontend;
 
-import backend.Coordinate;
-import backend.Sprite;
-import backend.Velocity;
+import backend.*;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Shape;
-import javafx.scene.shape.Sphere;
 
-public class Ball extends Sprite {
+public class Ball extends Sprite implements Collidable {
 
     private static final int RADIUS = 20;
     private static final Color FILL = Color.GREEN;
 
-    private Velocity mVelocity;
-    private Circle mCircle;
-    private PhongMaterial mMaterial;
+    private Circle circle;
 
     public Ball(double x, double y) {
         super(new Circle(RADIUS));
-        mPosition = new Coordinate(x, y);
-        mCircle = (Circle) mNode;
-        mCircle.setFill(FILL);
+        position = new Coordinate(x, y);
+        circle = (Circle) node;
+        circle.setFill(FILL);
     }
 
     @Override
     public void update(double deltaTime) {
 
-        Velocity curVelocity = new Velocity(2, 2, true);
+        Velocity curVelocity = new Velocity(0, 2, true);
 
-        for (Line line : sLineList) {
-            if (Shape.intersect(line.getmNode(), mCircle).getBoundsInLocal().getWidth() != -1) {
-                System.out.println("INTERSECT");
-                curVelocity.setXY(curVelocity.getXSpeed(), 0);
+        double xSpeed = -1;
+        for (Collidable collidable : Collidable.collidableList) {
+            if (collidable != this) {
+                if (collidable instanceof Line) {
+                    if (CollisonEngine.circleLine(circle, ((Line) collidable).getNode())) {
+                        xSpeed = 0;
+                        for (int i = 0; i < RADIUS * 2; i += 5) {
+                            Ball leftTest = new Ball(this.circle.getCenterX() - i, this.circle.getCenterY());
+                            leftTest.updateSpritePosition();
+                            Ball rightTest = new Ball(this.circle.getCenterX() + i, this.circle.getCenterY());
+                            rightTest.updateSpritePosition();
+
+                            if (!CollisonEngine.circleLine(leftTest.getNode(), ((Line) collidable).getNode())) {
+                                xSpeed = -0.5;
+                                break;
+                            } else if (!CollisonEngine.circleLine(rightTest.getNode(), ((Line) collidable).getNode())) {
+                                xSpeed = 0.5;
+                                break;
+                            }
+                        }
+                    }
+                } else if (collidable instanceof Ball) {
+                    if (CollisonEngine.circleCircle(circle, ((Ball) collidable).circle)) {
+                        xSpeed = 0;
+                        for (int i = 0; i < 5; i++) {
+                            Ball leftTest = new Ball(this.circle.getCenterX() - i, this.circle.getCenterY());
+                            leftTest.updateSpritePosition();
+                            Ball rightTest = new Ball(this.circle.getCenterX() + i, this.circle.getCenterY());
+                            rightTest.updateSpritePosition();
+
+                            if (!CollisonEngine.circleCircle(leftTest.getNode(), ((Ball) collidable).circle)) {
+                                xSpeed = -0.5;
+                                break;
+                            } else if (!CollisonEngine.circleCircle(rightTest.getNode(), ((Ball) collidable).circle)) {
+                                xSpeed = 0.5;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (xSpeed == 0) {
+                    break;
+                }
             }
         }
 
-        mPosition = mPosition.move(curVelocity);
+        if (xSpeed != -1) {
+            curVelocity.setXY(xSpeed, 0);
+        }
 
+        position = position.move(curVelocity);
         updateSpritePosition();
     }
 
     private void updateSpritePosition() {
-        getmNode().setCenterX(mPosition.getX());
-        getmNode().setCenterY(mPosition.getY());
+        getNode().setCenterX(position.getX());
+        getNode().setCenterY(position.getY());
     }
 
-    public Circle getmNode() {
-        return mCircle;
+    public Circle getNode() {
+        return circle;
     }
 }
